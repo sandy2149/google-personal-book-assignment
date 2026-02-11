@@ -1,7 +1,5 @@
 package com.example.google_personal_book_assignment.controller.google;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.example.google_personal_book_assignment.dto.GoogleBookResponse;
 import com.example.google_personal_book_assignment.service.google.GoogleBookService;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(GoogleBookController.class)
 class GoogleBookControllerTest {
@@ -25,23 +24,21 @@ class GoogleBookControllerTest {
     @MockBean
     private GoogleBookService googleBookService;
 
-    // ✅ Positive Test
+
     @Test
     void shouldReturnBookFromGoogle() throws Exception {
 
         GoogleBookResponse response = new GoogleBookResponse();
         response.setId("J1001");
 
-        GoogleBookResponse.VolumeInfo volumeInfo =
-                new GoogleBookResponse.VolumeInfo();
+        GoogleBookResponse.VolumeInfo volumeInfo = new GoogleBookResponse.VolumeInfo();
         volumeInfo.setTitle("Spring Boot Book");
         volumeInfo.setAuthors(List.of("Kathy Sierra"));
-        volumeInfo.setPageCount(500);
+        volumeInfo.setPageCount(1010);
 
         response.setVolumeInfo(volumeInfo);
 
-        Mockito.when(googleBookService.getBookById("J1001"))
-                .thenReturn(response);
+        Mockito.when(googleBookService.getBookById("J1001")).thenReturn(response);
 
         mockMvc.perform(get("/google/J1001"))
                 .andExpect(status().isOk())
@@ -52,11 +49,7 @@ class GoogleBookControllerTest {
     // Negative Test
     @Test
     void shouldReturnBadRequestIfServiceThrowsException() throws Exception {
-
-        Mockito.when(googleBookService.getBookById("INVALID"))
-                .thenThrow(new IllegalArgumentException("Book not found"));
-
-        mockMvc.perform(get("/google/INVALID"))
-                .andExpect(status().isBadRequest());
+        Mockito.when(googleBookService.getBookById("id")).thenThrow(new IllegalArgumentException("Book not found"));
+        mockMvc.perform(get("/google/id")).andExpect(status().isBadRequest());
     }
 }

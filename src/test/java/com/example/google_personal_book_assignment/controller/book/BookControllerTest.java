@@ -38,6 +38,20 @@ class BookControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Spring Boot Book"));
     }
 
+    @Test
+    void addBookFromGoogleSuccessfully() throws Exception {
+
+        Book book = getBook();
+        Mockito.when(bookService.addBookFromGoogle("J1001")).thenReturn(book);
+
+        mockMvc.perform(post("/books/J1001")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.googleId").value("J1001"))
+                .andExpect(jsonPath("$.title").value("Spring Boot Book"))
+                .andExpect(jsonPath("$.author").value("Kathy Siera"));
+    }
+
     public static Book getBook() {
         Book book1 = Book.builder()
                 .id(1L)
