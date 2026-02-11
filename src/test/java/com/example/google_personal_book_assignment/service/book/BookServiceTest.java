@@ -74,4 +74,19 @@ class BookServiceTest {
         List<Book> books = bookService.getAllBooks();
         Assertions.assertEquals(3, books.size());
     }
+
+    //Negative Cases
+
+    @Test
+    void throwsExceptionIfBookNotFoundInGoogle() {
+        Mockito.when(bookRepository.existsByGoogleId("J1001")).thenReturn(false);
+        Mockito.when(googleBookService.getBookById("J1001")).thenReturn(null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> bookService.addBookFromGoogle("J1001"));
+    }
+
+    @Test
+    void throwsExceptionIfDuplicateBook() {
+        Mockito.when(bookRepository.existsByGoogleId("J1001")).thenReturn(true);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> bookService.addBookFromGoogle("J1001"));
+    }
 }
