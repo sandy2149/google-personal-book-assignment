@@ -41,4 +41,20 @@ class GoogleBookServiceTest {
         Assertions.assertEquals("J1001", googleBookResponseResult.getId());
     }
 
+    // Negative Cases
+
+    @Test
+    void gettingNullWhenApiReturningNull() {
+        Mockito.when(restTemplate.getForObject(completeUrl, GoogleBookResponse.class)).thenReturn(null);
+        GoogleBookResponse googleBookResponse = googleBookService.getBookById("J1001");
+        Assertions.assertNull(googleBookResponse);
+    }
+
+    @Test
+    void throwsExceptionIfApiFails() {
+        Mockito.when(restTemplate.getForObject(completeUrl, GoogleBookResponse.class)).thenThrow(new RuntimeException("API fails"));
+        Assertions.assertThrows(RuntimeException.class, () -> googleBookService.getBookById("J1001")
+        );
+    }
+
 }
