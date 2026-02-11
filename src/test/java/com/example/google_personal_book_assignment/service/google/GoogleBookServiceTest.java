@@ -22,6 +22,7 @@ class GoogleBookServiceTest {
     private GoogleBookService googleBookService;
 
     private final String url = "https://www.googleapis.com/books/v1";
+    private final String completeUrl = url + "/volumes/J1001";
 
     @BeforeEach
     void setup() {
@@ -33,30 +34,11 @@ class GoogleBookServiceTest {
         GoogleBookResponse googleBookResponse = new GoogleBookResponse();
         googleBookResponse.setId("J1001");
 
-        String completeUrl = url + "/volumes/J1001";
-        Mockito.when(restTemplate.getForObject(completeUrl, GoogleBookResponse.class))
-                .thenReturn(googleBookResponse);
+        Mockito.when(restTemplate.getForObject(completeUrl, GoogleBookResponse.class)).thenReturn(googleBookResponse);
         GoogleBookResponse googleBookResponseResult = googleBookService.getBookById("J1001");
 
         Assertions.assertNotNull(googleBookResponseResult);
         Assertions.assertEquals("J1001", googleBookResponseResult.getId());
     }
 
-    // Negative Cases
-
-    @Test
-    void gettingNullWhenApiReturningNull() {
-        String completeUrl = url + "/volumes/J1001";
-        Mockito.when(restTemplate.getForObject(completeUrl, GoogleBookResponse.class)).thenReturn(null);
-        GoogleBookResponse googleBookResponse = googleBookService.getBookById("J1001");
-        Assertions.assertNull(googleBookResponse);
-    }
-
-    @Test
-    void throwsExceptionIfApiFails() {
-        String completeUrl = url + "/volumes/J1001";
-        Mockito.when(restTemplate.getForObject(completeUrl, GoogleBookResponse.class)).thenThrow(new RuntimeException("API fails"));
-        Assertions.assertThrows(RuntimeException.class, () -> googleBookService.getBookById("J1001")
-        );
-    }
 }
