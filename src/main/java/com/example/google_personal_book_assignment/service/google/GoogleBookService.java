@@ -17,7 +17,7 @@ public class GoogleBookService {
     @Value("${google.books.base-url}")
     private String baseUrl;
 
-    public GoogleBookResponse fetchBookById(String googleId) {
+    public GoogleBookResponse getBookById(String googleId) {
         String url = baseUrl + "/volumes/" + googleId;
         return restTemplate.getForObject(url, GoogleBookResponse.class);
     }
