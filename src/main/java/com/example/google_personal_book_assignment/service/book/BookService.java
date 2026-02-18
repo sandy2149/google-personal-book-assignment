@@ -3,6 +3,8 @@ package com.example.google_personal_book_assignment.service.book;
 
 import com.example.google_personal_book_assignment.dto.GoogleBookResponse;
 import com.example.google_personal_book_assignment.entity.Book;
+import com.example.google_personal_book_assignment.exception.CustomBusinessException;
+import com.example.google_personal_book_assignment.exception.ErrorConstants;
 import com.example.google_personal_book_assignment.repository.BookRepository;
 import com.example.google_personal_book_assignment.service.google.GoogleBookService;
 import jakarta.transaction.Transactional;
@@ -16,24 +18,23 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+
 public class BookService {
     private final BookRepository bookRepository;
     private final GoogleBookService googleBookService;
 
+    @Transactional
     public Book addBookFromGoogle(String googleId) {
         log.info("addBookFromGoogle");
 
-        //Checks if duplicate
         if (bookRepository.existsByGoogleId(googleId)) {
-            throw new IllegalArgumentException("Book already exists");
+            throw new CustomBusinessException(ErrorConstants.BOOK_ALREADY_EXISTS);
         }
 
         GoogleBookResponse response = googleBookService.getBookById(googleId);
 
-        //Cheks if googleid response not null or blank
         if (Objects.isNull(response) || Objects.isNull(response.getId())) {
-            throw new IllegalArgumentException("Book id not found");
+            throw new CustomBusinessException(ErrorConstants.BOOK_NOT_FOUND);
         }
 
         GoogleBookResponse.VolumeInfo volumeInfo = response.getVolumeInfo();
